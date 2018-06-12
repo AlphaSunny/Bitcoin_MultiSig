@@ -1,0 +1,27 @@
+Brand new address pair: Number 1
+Compressed public address - 34 chars - 35BsmTZBb54NAA5D9ziVuVfKd6AJzUn8hQ
+Private key - 52 chars - KyrGMSrPwbCxAsHJwH1ke8khSS2TQfL8JBh9cnfxA2Yd7USXXq4E
+Less compressed public key/address - 66 chars - 0395c24d9553b77fc34339a706d34fc654b809609f04308d915847c88247e86c7e
+
+
+Brand new address pair: Number 2
+Compressed public address - 34 chars - 37gHBnPynmm5oqzozSGoRLVs6kUxAMjuSj
+Private key - 52 chars - L1ViaJfxsg7NibXxoaVKsThtGRV5MAbgRvAfcFf6dFqPMmK33Qns
+Less compressed public key/address - 66 chars - 0293d62bc03625705bba64a9b85500a7a78333d82b0410c82832c2188d72f3e906
+
+
+Brand new address pair: Number 3
+Compressed public address - 34 chars - 38CtNNJiaFXbdpUkxqNutLuPBGgfu3RMLM
+Private key - 52 chars - KxRTzG5cgFfrTtkyX7b69hiBXaxRtFazrARDRMq3eBuFEBKREeUt
+Less compressed public key/address - 66 chars - 02a27cfd806c669bbb756b6bc12761d958ec2badcf76d3bc4691583d0393223fb6
+
+
+-----------command used in the bitcoind-------------------
+bitcoin-cli createmultisig 2 '["0395c24d9553b77fc34339a706d34fc654b809609f04308d915847c88247e86c7e","0293d62bc03625705bba64a9b85500a7a78333d82b0410c82832c2188d72f3e906","02a27cfd806c669bbb756b6bc12761d958ec2badcf76d3bc4691583d0393223fb6"]'
+
+
+The multisig address is
+2 chars -  {'address': '3JcWBbW6HdwRoaRgBdmUb3b9s4BmRQSkTy', 'redeemScript': '52210395c24d9553b77fc34339a706d34fc654b809609f04308d915847c88247e86c7e210293d62bc03625705bba64a9b85500a7a78333d82b0410c82832c2188d72f3e9062102a27cfd806c669bbb756b6bc12761d958ec2badcf76d3bc4691583d0393223fb653ae'}
+
+
+The redeemScript - 210 chars - 52210395c24d9553b77fc34339a706d34fc654b809609f04308d915847c88247e86c7e210293d62bc03625705bba64a9b85500a7a78333d82b0410c82832c2188d72f3e9062102a27cfd806c669bbb756b6bc12761d958ec2badcf76d3bc4691583d0393223fb653ae
