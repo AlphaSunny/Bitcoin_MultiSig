@@ -111,11 +111,3 @@ else:
             print( "And",Leftover,"Satoshis will be sent to the change account",ChangeAddress)
             print( "Finally, a miner's fee of ",SetTxFee,"Satoshis will be sent to the miners")
             print('\n')
-
-            ReallyNow = (input('If you hit return now, you will be sending these funds from your multisig account '))
-            ReallyNow2 = (input('No...REally...If you hit return now, you will be sending funds from your multisig account '))
-            print('\n')
-            print( "SORRY. We won't do this. Don't want anyone to lose money playing with this code")
-            print( "But if you really want to send it, just")
-            print( "copy the HEX from the big block up above")
-            print( "and put it in a 'bitcoind sendrawtransaction' request")

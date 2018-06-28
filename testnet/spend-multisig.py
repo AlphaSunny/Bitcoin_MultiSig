@@ -1,21 +1,30 @@
 # This simple wallet works with bitcoind and will only work with 2-of-3 multisigs
 # Using the python-bitcoinlib library
+
+# 如何分布三个私钥的存储
+# 一个自己使用，一个存放在wallet provider， 一个放在最安全的地方，一般不用
+
+# 如何来花这个multisig addr中的比特币？
+# 比如你想到taobao.com上去花比特币买东西，你这时用自己的私钥来 createrawTransaction,但是这时交易显示的花费是失败的，
+# 这时你将signed之后的原始交易发给第三方平台，这时你就让它用私钥来sign你sign过的transaction，这时会显示花费成功
 import bitcoin
 from bitcoin.rpc import RawProxy
 
 bitcoin.SelectParams('testnet')
-p = RawProxy() #creates an object called 'bitcoin' that allows for bitcoind calls
+p = RawProxy() #creates an object called p that allows for bitcoind calls
 
 money = p.getbalance()
 print(money)
 # YOU NEED AT LEAST TWO OF THE PRIVATE KEYS FROM PART ONE linked to your MULTI-SIG ADDRESS
-multisigprivkeyone = "cPw3fUfVnhZNNpg8mEnoNcbrk4VhhobDohZBcZdrS3pfP53ymhB2" #your key/brother one
-multisigprivkeytwo = "cPpjLNPGgvwfCSUuXk1qExmBQB71piHxMUxmukzLr43m38VqsCHo" #wallet service/brother two
-multisigprivkeythree = "cT2YurYhGWiShznfwzcsysf1a4koDhP369dtWiKBTyZV1HMTGLEk" #safe deposit box/brother three
-ChangeAddress = "2NBwWtf4mQcmx1mR2tNSsuh21LsoPtbxA79" #!!! Makes Sure to set your own personal Change Address
+multisigprivkeyone = "cPw3fUfVnhZNNpg8mEnoNcbrk4VhhobDohZBcZdrS3pfP53ymhB2" 
+multisigprivkeytwo = "cPpjLNPGgvwfCSUuXk1qExmBQB71piHxMUxmukzLr43m38VqsCHo"
+multisigprivkeythree = "cT2YurYhGWiShznfwzcsysf1a4koDhP369dtWiKBTyZV1HMTGLEk"
+ChangeAddress = "2NBwWtf4mQcmx1mR2tNSsuh21LsoPtbxA79" # Makes Sure to set your own personal Change Address
 
-SetTxFee = int(0.00005461*100000000) # Lets proper good etiquette & put something aside for our friends the miners
+SetTxFee = int(0.00005461*100000000) 
 
+
+# ask your account, how much money you have
 unspent = p.listunspent() # Query wallet.dat file for unspent funds to see if we have multisigs to spend from
 
 print( "Your Bitcoin-QT/d has",len(unspent),"unspent outputs")
@@ -32,6 +41,8 @@ totalcoin = int(p.getbalance()*100000000)
 print( "The total value of unspent satoshis is", totalcoin)
 print('\n')
 
+
+# 让用户选择来花费哪个utxo，因为是测试网络生成的multisig的开头也为2   ???????
 WhichTrans = int(input('Spend from which output? '))-1
 if WhichTrans > len(unspent): #Basic idiot check. Clearly a real wallet would do more checks.
     print( "Sorry that's not a valid output" )
@@ -50,6 +61,7 @@ else:
         print( "The txid is:",unspent[WhichTrans]["txid"])
         print( "The ScriptPubKey is:", unspent[WhichTrans]["scriptPubKey"])
         print('\n')
+        # 注意只有multisig含有redeemscripts
         print( "And only multisigs have redeemScripts.")
         print( "The redeemScript is:",unspent[WhichTrans]["redeemScript"])
         print('\n')
@@ -61,7 +73,8 @@ else:
             print( "Sorry not enough funds in that account") # check to see if there are enough funds.)
         else:
             print('\n')
-            SendAddress = str(input('Send funds to which bitcoin address? '))  #default value Sean's Outpost
+            # 输入你想需要将比特币 汇入的地址
+            SendAddress = str(input('Send funds to which bitcoin address? ')) 
             print('\n')
             Leftover = int(unspent[WhichTrans]["amount"]*100000000)-HowMuch-SetTxFee
             print( "This send to",SendAddress,"will leave", Leftover,"Satoshis in your accounts.")
@@ -85,13 +98,17 @@ else:
                                       unspent[WhichTrans]["vout"],',"scriptPubKey":"',unspent[WhichTrans]["scriptPubKey"],'","redeemScript":"',
                                       unspent[WhichTrans]["redeemScript"],'"}]\' \'["',multisigprivkeyone,'"]\''))
             print('\n')
+
+            # 通过一个私钥，调用signrawtransaction功能，返回了一串 hex码
             signedone = p.signrawtransaction (rawtransact,
                     [{"txid":unspent[WhichTrans]["txid"],
                     "vout":unspent[WhichTrans]["vout"],"scriptPubKey":unspent[WhichTrans]["scriptPubKey"],
                     "redeemScript":unspent[WhichTrans]["redeemScript"]}],
                     [multisigprivkeyone])
+            # 通过hex码来提交
             print(signedone)
             print('\n')
+            # 意味着在实际的软件开发中，只需要将一个私钥sign后的hex码发给另一个私钥的拥有者，就可以花费这笔钱了
             print("In a real world situation, the 'hex' part of this thing above would be sent to the second")
             print("user or the wallet provider. Notice, the private key is not there. It has been signed digitally")
             print('\n')
@@ -100,12 +117,13 @@ else:
             print("%s%s%s%s%s%s%s%s%s%s%s%s%s" % ('bitcoind signrawtransaction \'',signedone["hex"],'\' \'[{"txid":"',unspent[WhichTrans]["txid"],'","vout":',
                                       unspent[WhichTrans]["vout"],',"scriptPubKey":"',unspent[WhichTrans]["scriptPubKey"],'","redeemScript":"',
                                       unspent[WhichTrans]["redeemScript"],'"}]\' \'["',multisigprivkeytwo,'"]\''))
-            print()
             doublesignedrawtransaction = p.signrawtransaction (signedone["hex"],
                     [{"txid":unspent[WhichTrans]["txid"],
                     "vout":unspent[WhichTrans]["vout"],"scriptPubKey":unspent[WhichTrans]["scriptPubKey"],
                     "redeemScript":unspent[WhichTrans]["redeemScript"]}],
                     [multisigprivkeytwo])
+
+            # 经过两个私钥签名后就得到了这串hex码，只要将其提交给node，这笔交易就会被花费
             print( doublesignedrawtransaction)
             print('\n')
             print( "You are now ready to send",HowMuch,"Satoshis to",SendAddress)
@@ -113,10 +131,5 @@ else:
             print( "Finally, a miner's fee of ",SetTxFee,"Satoshis will be sent to the miners")
             print('\n')
 
-            ReallyNow = (input('If you hit return now, you will be sending these funds from your multisig account '))
-            ReallyNow2 = (input('No...REally...If you hit return now, you will be sending funds from your multisig account '))
-            print('\n')
-            print( "SORRY. We won't do this. Don't want anyone to lose money playing with this code")
-            print( "But if you really want to send it, just")
-            print( "copy the HEX from the big block up above")
-            print( "and put it in a 'bitcoind sendrawtransaction' request")
+            # 在这里就不实际花费了，如果你想实际花费，直接调用 bitcoind sendrawtransaction这个接口
+
